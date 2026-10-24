@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DatRex — Alerts</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-main">
+      <div class="page-head">
+        <h2>Alerts</h2>
+        <p>Recovery status and account activity from DatRex.</p>
+      </div>
+      <div class="card" id="notifWrap">
+        <p class="text-muted" style="font-size:13px">Loading…</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="drawer.js"></script>
+  <script>
+    document.addEventListener('stb:ready', (e) => {
+      const uid = e.detail.id;
+      db.collection(STB_C.notifications)
+        .where('uid', '==', uid)
+        .orderBy('createdAt', 'desc')
+        .limit(100)
+        .onSnapshot(snap => {
+          const el = document.getElementById('notifWrap');
+          if (snap.empty) {
+            el.innerHTML = '<p class="text-muted" style="font-size:13px">No alerts yet.</p>';
+            return;
+          }
+          el.innerHTML = snap.docs.map(d => {
+            const n = d.data();
+            const colors = {
+              success: 'var(--green-light)', error: 'var(--danger-light)',
+              warning: 'var(--warning-light)', info: 'var(--info-light)'
+            };
+            const iconColors = {
+              success: 'var(--green-dark)', error: 'var(--danger)',
+              warning: 'var(--warning)', info: 'var(--info)'
+            };
+            const icons = { success: 'fa-check', error: 'fa-xmark', warning: 'fa-exclamation', info: 'fa-info' };
+            return `
+              <div class="tx-item" style="${n.read ? '' : 'background:var(--green-soft);margin:0 -18px;padding-left:18px;padding-right:18px;'}">
+                <div class="tx-icon" style="background:${colors[n.type] || colors.info};color:${iconColors[n.type] || iconColors.info}">
+                  <i class="fa-solid ${icons[n.type] || icons.info}"></i>
+                </div>
+                <div class="tx-body">
+                  <div class="tx-title">${n.title}</div>
+                  <div class="tx-sub">${n.body}</div>
+                  <div class="tx-sub" style="margin-top:2px">${stbDate(n.createdAt)}</div>
+                </div>
+              </div>`;
+          }).join('');
+          // mark all as read
+          snap.docs.filter(d => !d.data().read).forEach(d => d.ref.update({ read: true }).catch(() => {}));
+        });
+    });
+  </script>
+</body>
+</html>

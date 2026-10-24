@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DatRex — Pending Approval</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="pending-wrap">
+    <div class="pending-card">
+      <div class="pending-icon"><i class="fa-solid fa-clock"></i></div>
+      <h2 style="margin:0 0 8px;font-size:20px;letter-spacing:-0.3px">Account under review</h2>
+      <p class="text-muted" style="margin:0 0 22px;font-size:13px">
+        Your DatRex Recovery Agency application is pending admin approval.
+        This page will update automatically once approved.
+      </p>
+      <button class="btn btn-ghost btn-block" id="signOutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign out
+      </button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    let unsubUser = null;
+    stbonAuth((user) => {
+      if (!user) { location.href = 'login.html'; return; }
+      if (unsubUser) unsubUser();
+      unsubUser = db.collection(STB_C.users).doc(user.uid).onSnapshot((snap) => {
+        if (!snap.exists) return;
+        const u = snap.data();
+        if (u.status === 'approved') location.href = 'dashboard.html';
+        if (u.status === 'blocked') {
+          auth.signOut().then(() => location.href = 'login.html?blocked=1');
+        }
+      });
+    });
+    document.getElementById('signOutBtn').addEventListener('click', async () => {
+      await auth.signOut();
+      location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

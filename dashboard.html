@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DatRex — Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-main">
+      <div class="page-head">
+        <h2>Welcome, <span id="greetName">…</span></h2>
+        <p>Here's your recovery summary.</p>
+      </div>
+
+      <!-- Hero balance card -->
+      <div class="balance-card mb-16">
+        <div class="bc-label">Available Recovery Balance</div>
+        <div class="bc-amount" id="totalBalance">₱0.00</div>
+        <div class="bc-status empty" id="statusBadge">
+          <i class="fa-solid fa-circle-info"></i> 0 Funds Recovered
+        </div>
+      </div>
+
+      <!-- Quick actions (UPDATED) -->
+      <div class="grid-2 mb-16">
+        <a href="transfer-internal.html" class="btn btn-primary" style="text-decoration:none;">
+          <i class="fa-solid fa-arrow-right-arrow-left"></i> Internal Transfer
+        </a>
+        <a href="transfer-bank.html" class="btn btn-outline" style="text-decoration:none;">
+          <i class="fa-solid fa-building-columns"></i> Transfer to Bank
+        </a>
+      </div>
+
+      <!-- Accounts -->
+      <div class="card mb-16">
+        <div class="card-header">
+          <div class="card-title">Account portfolio</div>
+          <a class="card-link" href="accounts.html">View all</a>
+        </div>
+        <div id="accList"></div>
+      </div>
+
+      <!-- Recent transactions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent activity</div>
+          <a class="card-link" href="transactions.html">View all</a>
+        </div>
+        <div id="txList"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="drawer.js"></script>
+  <script>
+    let accounts = [];
+    let unsubAcc = null;
+
+    document.addEventListener('stb:ready', async (e) => {
+      const profile = e.detail;
+      document.getElementById('greetName').textContent = profile.fullName.split(' ')[0];
+
+      unsubAcc = db.collection(STB_C.accounts)
+        .where('uid', '==', profile.id)
+        .onSnapshot(snap => {
+          accounts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          renderBalance();
+          renderAccounts();
+        });
+
+      loadRecentTx(profile.id);
+      refreshTx = () => loadRecentTx(profile.id);
+    });
+
+    let refreshTx = () => {};
+    document.addEventListener('stb:transfer-success', () => refreshTx());
+
+    function renderBalance() {
+      const total = accounts.reduce((s, a) => s + (a.balance || 0), 0);
+      document.getElementById('totalBalance').textContent = stbMoney(total);
+      const badge = document.getElementById('statusBadge');
+      if (total > 0) {
+        badge.className = 'bc-status';
+        badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Successful Recovery';
+      } else {
+        badge.className = 'bc-status empty';
+        badge.innerHTML = '<i class="fa-solid fa-circle-info"></i> 0 Funds Recovered';
+      }
+    }
+
+    function renderAccounts() {
+      const el = document.getElementById('accList');
+      if (!accounts.length) { el.innerHTML = '<p class="text-muted">No accounts.</p>'; return; }
+      el.innerHTML = accounts.map(a => `
+        <div class="acc-item">
+          <div class="acc-icon"><i class="fa-solid fa-${a.type === 'savings' ? 'piggy-bank' : 'wallet'}"></i></div>
+          <div class="acc-info">
+            <div class="acc-type">${a.type}</div>
+            <div class="acc-num">•••• ${a.accountNumber.slice(-4)}</div>
+          </div>
+          <div class="acc-bal">${stbMoney(a.balance)}<small>Balance</small></div>
+        </div>`).join('');
+    }
+
+    async function loadRecentTx(uid) {
+      const q = await db.collection(STB_C.transactions)
+        .where('fromUid', '==', uid).orderBy('createdAt', 'desc').limit(3).get();
+      const q2 = await db.collection(STB_C.transactions)
+        .where('toUid', '==', uid).orderBy('createdAt', 'desc').limit(3).get();
+      const all = [...q.docs, ...q2.docs]
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))
+        .slice(0, 5);
+      const el = document.getElementById('txList');
+      if (!all.length) {
+        el.innerHTML = '<p class="text-muted" style="font-size:13px">No transactions yet.</p>';
+        return;
+      }
+      
+      el.innerHTML = all.map(tx => {
+        const incoming = tx.toUid === uid;
+        let title = 'Sent';
+        
+        if (incoming) {
+          title = 'Funds received';
+        } else if (tx.type === 'external') {
+          title = `To Bank · ${tx.toAccountName || tx.toBank || 'External'}`;
+        } else if (tx.type === 'internal') {
+          title = `To DatRex User`;
+        } else {
+          title = `Sent · ${tx.type}`;
+        }
+
+        return `
+          <div class="tx-item">
+            <div class="tx-icon ${incoming ? 'in' : 'out'}">
+              <i class="fa-solid fa-${incoming ? 'arrow-down' : 'arrow-up'}"></i>
+            </div>
+            <div class="tx-body">
+              <div class="tx-title">${title}</div>
+              <div class="tx-sub">${stbDate(tx.createdAt)} · ${tx.reference || '—'}</div>
+            </div>
+            <div class="tx-amt ${incoming ? 'in' : 'out'}">
+              ${incoming ? '+' : '−'}${stbMoney(tx.amount)}
+              <small>${tx.status}</small>
+            </div>
+          </div>`;
+      }).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DatRex — Accounts</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-main">
+      <div class="page-head">
+        <h2>Your accounts</h2>
+        <p>All recovery accounts linked to your profile.</p>
+      </div>
+      <div class="card" id="accWrap"></div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="drawer.js"></script>
+  <script>
+    document.addEventListener('stb:ready', (e) => {
+      db.collection(STB_C.accounts).where('uid', '==', e.detail.id).onSnapshot(snap => {
+        const accounts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const el = document.getElementById('accWrap');
+        if (!accounts.length) { el.innerHTML = '<p class="text-muted">No accounts.</p>'; return; }
+        el.innerHTML = accounts.map(a => `
+          <div class="acc-item">
+            <div class="acc-icon"><i class="fa-solid fa-${a.type === 'savings' ? 'piggy-bank' : 'wallet'}"></i></div>
+            <div class="acc-info">
+              <div class="acc-type">${a.type}</div>
+              <div class="acc-num">${a.accountNumber}</div>
+            </div>
+            <div class="acc-bal">${stbMoney(a.balance)}<small>Balance</small></div>
+          </div>`).join('');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DatRex Recovery Agency — Sign in</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="auth-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <h1>DatRex Recovery Agency</h1>
+        <p>Secure recovery · trusted custody</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Sign in</button>
+        <button class="tab" data-tab="signup">Create account</button>
+      </div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label>Email</label>
+          <input class="input" type="email" id="liEmail" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input class="input" type="password" id="liPass" required autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" id="liBtn">Sign in</button>
+      </form>
+
+      <form id="signupForm" class="hidden">
+        <div class="field">
+          <label>Full name</label>
+          <input class="input" id="suName" required autocomplete="name">
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Username</label>
+            <input class="input" id="suUsername" required autocomplete="username">
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input class="input" id="suPhone" required inputmode="tel" autocomplete="tel">
+          </div>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input class="input" type="email" id="suEmail" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Date of birth</label>
+          <input class="input" type="date" id="suDob" required>
+        </div>
+        <div class="field">
+          <label>Password <span style="font-weight:400;color:var(--text-muted)">(min 6 chars)</span></label>
+          <input class="input" type="password" id="suPass" required minlength="6" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label>Set 4-digit PIN</label>
+          <div class="pin-row">
+            <input maxlength="1" inputmode="numeric" data-i="0" autocomplete="off">
+            <input maxlength="1" inputmode="numeric" data-i="1" autocomplete="off">
+            <input maxlength="1" inputmode="numeric" data-i="2" autocomplete="off">
+            <input maxlength="1" inputmode="numeric" data-i="3" autocomplete="off">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" id="suBtn">Create account</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        const tab = t.dataset.tab;
+        document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+        document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
+      });
+    });
+
+    document.querySelectorAll('#signupForm .pin-row input').forEach((inp, i, arr) => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/\D/g, '').slice(0, 1);
+        if (inp.value && i < arr.length - 1) arr[i + 1].focus();
+      });
+    });
+
+    stbonAuth(async (user) => {
+      if (!user) return;
+      if (user.email && user.email.toLowerCase() === STB_ADMIN_EMAIL.toLowerCase()) {
+        location.href = 'admin.html'; return;
+      }
+      const u = await stbGetUser(user.uid);
+      if (!u) return;
+      if (u.status === 'pending') location.href = 'pending.html';
+      else if (u.status === 'approved') location.href = 'dashboard.html';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('liBtn');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+      try {
+        await auth.signInWithEmailAndPassword(
+          document.getElementById('liEmail').value.trim(),
+          document.getElementById('liPass').value
+        );
+      } catch (err) {
+        stbToast(err.message.replace('Firebase: ', ''), 'error');
+        btn.disabled = false; btn.textContent = 'Sign in';
+      }
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('suBtn');
+      btn.disabled = true; btn.textContent = 'Creating…';
+
+      const pinInputs = document.querySelectorAll('#signupForm .pin-row input');
+      const pin = [...pinInputs].map(x => x.value).join('');
+      if (pin.length !== 4) {
+        stbToast('Enter a 4-digit PIN', 'error');
+        btn.disabled = false; btn.textContent = 'Create account'; return;
+      }
+
+      const data = {
+        fullName: document.getElementById('suName').value.trim(),
+        username: document.getElementById('suUsername').value.trim().toLowerCase(),
+        phone: document.getElementById('suPhone').value.trim(),
+        dob: document.getElementById('suDob').value,
+        email: document.getElementById('suEmail').value.trim().toLowerCase(),
+        password: document.getElementById('suPass').value,
+        pin
+      };
+
+      if (data.email === STB_ADMIN_EMAIL.toLowerCase()) {
+        stbToast('This email is reserved for admin.', 'error');
+        btn.disabled = false; btn.textContent = 'Create account'; return;
+      }
+
+      let authUser = null;
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(data.email, data.password);
+        authUser = cred.user;
+        const uid = authUser.uid;
+        const pinhash = await stbHashPin(data.pin);
+
+        await db.collection(STB_C.users).doc(uid).set({
+          fullName: data.fullName, username: data.username, phone: data.phone, dob: data.dob, email: data.email,
+          role: 'customer', status: 'pending', pinhash, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        async function newAccNumber() {
+          for (let i = 0; i < 8; i++) {
+            const n = stbGenAccountNumber();
+            const q = await db.collection(STB_C.accounts).where('accountNumber', '==', n).limit(1).get();
+            if (q.empty) return n;
+          }
+          throw new Error('Could not generate account number');
+        }
+        const checkingNum = await newAccNumber();
+        
+        await db.collection(STB_C.accounts).add({ 
+          uid, 
+          type: 'checking', 
+          balance: 0, 
+          accountNumber: checkingNum, 
+          createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+        });
+
+        location.href = 'pending.html';
+      } catch (err) {
+        if (authUser) {
+          try { await db.collection(STB_C.users).doc(authUser.uid).delete(); } catch (_) {}
+          try { await authUser.delete(); await auth.signOut(); } catch (_) {}
+        }
+        let msg = err.message.replace('Firebase: ', '');
+        if (err.code === 'permission-denied') msg = 'Database rules are blocking signup. Please publish the Firestore Rules.';
+        stbToast(msg, 'error');
+        btn.disabled = false; btn.textContent = 'Create account';
+      }
+    });
+  </script>
+</body>
+</html>

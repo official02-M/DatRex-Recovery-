@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DatRex — Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-main">
+      <div class="page-head">
+        <h2>Profile</h2>
+        <p>Your DatRex Recovery Agency details.</p>
+      </div>
+      <div class="card mb-16" id="profileCard"></div>
+
+      <div class="card mb-16">
+        <div class="card-title mb-16">Security</div>
+        <div class="admin-row">
+          <div class="admin-row-info">
+            <strong>Forgot your PIN?</strong>
+            <small>Contact DatRex support — an admin will reset it for you.</small>
+          </div>
+        </div>
+        <div class="admin-row">
+          <div class="admin-row-info">
+            <strong>Account status</strong>
+            <small id="statusTxt">—</small>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-danger btn-block" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Sign out
+      </button>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="drawer.js"></script>
+  <script>
+    document.addEventListener('stb:ready', (e) => {
+      const p = e.detail;
+      document.getElementById('profileCard').innerHTML = `
+        <div class="flex" style="gap:14px;align-items:center;margin-bottom:14px">
+          <div class="tb-avatar" style="width:52px;height:52px;font-size:18px">${
+            p.fullName.split(' ').map(s => s[0]).slice(0,2).join('').toUpperCase()
+          }</div>
+          <div>
+            <div style="font-weight:700;font-size:16px">${p.fullName}</div>
+            <div class="text-muted" style="font-size:12px">@${p.username}</div>
+          </div>
+        </div>
+        <div class="review-row"><span class="lbl">Email</span><span class="val">${p.email}</span></div>
+        <div class="review-row"><span class="lbl">Phone</span><span class="val">${p.phone || '—'}</span></div>
+        <div class="review-row"><span class="lbl">Date of birth</span><span class="val">${p.dob || '—'}</span></div>
+        <div class="review-row"><span class="lbl">Role</span><span class="val">${p.role}</span></div>
+      `;
+      const badge = p.status === 'approved' ? 'badge-green' : p.status === 'pending' ? 'badge-yellow' : 'badge-red';
+      document.getElementById('statusTxt').innerHTML = `<span class="badge ${badge}">${p.status}</span>`;
+    });
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await auth.signOut();
+      location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

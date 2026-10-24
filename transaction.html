@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DatRex — History</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <main class="app-main">
+      <div class="page-head">
+        <h2>Transaction history</h2>
+        <p>Every recovery disbursement in and out of your accounts.</p>
+      </div>
+      <div class="card" id="txWrap">
+        <p class="text-muted" style="font-size:13px">Loading…</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="drawer.js"></script>
+  <script>
+    async function load(uid) {
+      const [fromQ, toQ] = await Promise.all([
+        db.collection(STB_C.transactions).where('fromUid', '==', uid).orderBy('createdAt', 'desc').limit(100).get(),
+        db.collection(STB_C.transactions).where('toUid', '==', uid).orderBy('createdAt', 'desc').limit(100).get()
+      ]);
+      const all = [...fromQ.docs, ...toQ.docs].map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+
+      const el = document.getElementById('txWrap');
+      if (!all.length) {
+        el.innerHTML = '<p class="text-muted" style="font-size:13px">No transactions yet.</p>';
+        return;
+      }
+      el.innerHTML = all.map(tx => {
+        const incoming = tx.toUid === uid;
+        const title = incoming
+          ? 'Funds received'
+          : (tx.type === 'external' ? `To ${tx.beneficiaryName}` : `Sent · ${tx.type}`);
+        return `
+          <div class="tx-item">
+            <div class="tx-icon ${incoming ? 'in' : 'out'}">
+              <i class="fa-solid fa-${incoming ? 'arrow-down' : 'arrow-up'}"></i>
+            </div>
+            <div class="tx-body">
+              <div class="tx-title">${title}</div>
+              <div class="tx-sub">${stbDate(tx.createdAt)} · ${tx.reference || '—'}</div>
+            </div>
+            <div class="tx-amt ${incoming ? 'in' : 'out'}">
+              ${incoming ? '+' : '−'}${stbMoney(tx.amount)}
+              <small>${tx.status}</small>
+            </div>
+          </div>`;
+      }).join('');
+    }
+    document.addEventListener('stb:ready', (e) => load(e.detail.id));
+    document.addEventListener('stb:transfer-success', () => load(window.stbProfile.id));
+  </script>
+</body>
+</html>
