@@ -15,7 +15,7 @@
         <p>Recovery status and account activity from DatRex.</p>
       </div>
       <div class="card" id="notifWrap">
-        <p class="text-muted" style="font-size:13px">Loading…</p>
+        <div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div>
       </div>
     </main>
   </div>
@@ -28,18 +28,22 @@
   <script>
     document.addEventListener('stb:ready', (e) => {
       const uid = e.detail.id;
+      
       db.collection(STB_C.notifications)
         .where('uid', '==', uid)
-        .orderBy('createdAt', 'desc')
-        .limit(100)
         .onSnapshot(snap => {
           const el = document.getElementById('notifWrap');
+          
           if (snap.empty) {
-            el.innerHTML = '<p class="text-muted" style="font-size:13px">No alerts yet.</p>';
+            el.innerHTML = '<p class="text-muted text-center" style="font-size:13px">No alerts yet.</p>';
             return;
           }
-          el.innerHTML = snap.docs.map(d => {
-            const n = d.data();
+          
+          // Sort in JavaScript to avoid Firestore Index errors
+          const notifs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+            
+          el.innerHTML = notifs.map(n => {
             const colors = {
               success: 'var(--green-light)', error: 'var(--danger-light)',
               warning: 'var(--warning-light)', info: 'var(--info-light)'
@@ -49,6 +53,7 @@
               warning: 'var(--warning)', info: 'var(--info)'
             };
             const icons = { success: 'fa-check', error: 'fa-xmark', warning: 'fa-exclamation', info: 'fa-info' };
+            
             return `
               <div class="tx-item" style="${n.read ? '' : 'background:var(--green-soft);margin:0 -18px;padding-left:18px;padding-right:18px;'}">
                 <div class="tx-icon" style="background:${colors[n.type] || colors.info};color:${iconColors[n.type] || iconColors.info}">
@@ -61,8 +66,12 @@
                 </div>
               </div>`;
           }).join('');
-          // mark all as read
+          
+          // Mark all as read
           snap.docs.filter(d => !d.data().read).forEach(d => d.ref.update({ read: true }).catch(() => {}));
+          
+        }, err => {
+          document.getElementById('notifWrap').innerHTML = `<p class="text-muted text-center" style="color:var(--red)">Error loading alerts: ${err.message}</p>`;
         });
     });
   </script>
