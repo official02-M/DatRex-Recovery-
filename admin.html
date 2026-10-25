@@ -9,118 +9,557 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 <style>
-  :root {
-    --line: var(--border-soft); --line-2: var(--border); --ink: var(--text); --text: var(--text-mid);
-    --text-dim: var(--text-mid); --text-faint: var(--text-muted); --bg: var(--bg-soft);
-    --gold: var(--green); --gold-hover: var(--green-dark); --gold-soft: var(--green-light);
-    --green: var(--green); --green-soft: var(--green-light); --red: var(--danger); --red-soft: var(--danger-light);
-    --blue: var(--info); --blue-soft: var(--info-light); --amber: var(--warning); --amber-soft: var(--warning-light);
+  /* ============================================================
+     ADMIN — mobile-first layout (DatRex Theme)
+     ============================================================ */
+
+  body { background: #f0f3f8; }
+
+  /* Top bar */
+  .adm-top {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 40;
   }
-  body { background: var(--bg-soft); }
-  .adm-top { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 40; }
-  .adm-top-inner { max-width: 900px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .adm-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: .95rem; color: var(--ink); text-decoration: none; letter-spacing: -.01em; min-width: 0; }
-  .adm-brand-mark { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, var(--gold), var(--green-dark)); color: #fff; display: grid; place-items: center; font-size: .78rem; flex-shrink: 0; }
-  .adm-brand-text { display: flex; flex-direction: column; line-height: 1.05; min-width: 0; }
-  .adm-brand-text span { color: var(--gold); }
-  .adm-brand-sub { font-size: .55rem; font-weight: 700; letter-spacing: .14em; color: var(--gold-hover); background: var(--gold-soft); padding: 1px 5px; border-radius: 4px; margin-top: 3px; width: fit-content; }
-  .adm-signout { background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 8px 12px; border-radius: 10px; font-family: inherit; font-size: .78rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; }
-  .adm-signout:hover { background: #e8ecf4; }
-  .adm-main { max-width: 900px; margin: 0 auto; padding: 18px 14px 60px; }
-  .adm-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
-  .adm-stat { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px 12px; text-align: left; }
-  .adm-stat-label { font-size: .62rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; line-height: 1.2; margin-bottom: 6px; }
-  .adm-stat-val { font-size: 1.15rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; line-height: 1.1; word-break: break-all; }
-  .adm-stat-sub { font-size: .65rem; color: var(--text-faint); margin-top: 4px; line-height: 1.3; }
-  .adm-tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .adm-top-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .adm-brand {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 800; font-size: .95rem;
+    color: var(--text); text-decoration: none;
+    letter-spacing: -.01em;
+    min-width: 0;
+  }
+  .adm-brand:hover { text-decoration: none; }
+  .adm-brand-mark {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: #fff; display: grid; place-items: center; font-size: .78rem;
+    flex-shrink: 0;
+  }
+  .adm-brand-text {
+    display: flex; flex-direction: column; line-height: 1.05;
+    min-width: 0;
+  }
+  .adm-brand-text span { color: var(--green); }
+  .adm-brand-sub {
+    font-size: .55rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    color: var(--green-dark);
+    background: var(--green-light);
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-top: 3px;
+    width: fit-content;
+  }
+  .adm-signout {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: .78rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .adm-signout:hover { background: var(--border-soft); }
+
+  /* Main content */
+  .adm-main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 18px 14px 60px;
+  }
+
+  /* Stats */
+  .adm-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .adm-stat {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: left;
+  }
+  .adm-stat-label {
+    font-size: .62rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .adm-stat-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -.02em;
+    line-height: 1.1;
+    word-break: break-all;
+  }
+  .adm-stat-sub {
+    font-size: .65rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+
+  /* Tabs */
+  .adm-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
   .adm-tabs::-webkit-scrollbar { display: none; }
-  .adm-tab { background: #fff; border: 1px solid var(--line); color: var(--text-dim); padding: 9px 14px; border-radius: 999px; font-family: inherit; font-size: .78rem; font-weight: 600; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; transition: all .15s; }
-  .adm-tab:hover { background: var(--bg); }
-  .adm-tab.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+  .adm-tab {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    transition: all .15s;
+  }
+  .adm-tab:hover { background: var(--bg-soft); }
+  .adm-tab.active {
+    background: var(--green);
+    color: #fff;
+    border-color: var(--green);
+  }
   .adm-tab i { font-size: .72rem; }
+
+  /* Panels */
   .adm-panel { display: none; }
   .adm-panel.active { display: block; }
-  .adm-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-  .adm-head h3 { font-size: .95rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 8px; }
-  .adm-head h3 i { color: var(--gold-hover); }
-  .adm-search { width: 100%; padding: 10px 14px; border: 1px solid var(--line-2); border-radius: 10px; font-family: inherit; font-size: .85rem; background: #fff; }
-  .adm-search:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(22, 163, 74, .15); }
-  .adm-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
-  .adm-user-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
-  .adm-avatar { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, var(--gold), var(--green-dark)); color: #fff; display: grid; place-items: center; font-size: .82rem; font-weight: 700; flex-shrink: 0; }
+
+  /* Section head */
+  .adm-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .adm-head h3 {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .adm-head h3 i { color: var(--green-dark); }
+  .adm-search {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: .85rem;
+    background: #fff;
+  }
+  .adm-search:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, .15);
+  }
+
+  /* Cards */
+  .adm-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  /* User card */
+  .adm-user-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .adm-avatar {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: #fff;
+    display: grid; place-items: center;
+    font-size: .82rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
   .adm-user-info { flex: 1; min-width: 0; }
-  .adm-user-name { font-size: .9rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .adm-user-email { font-size: .74rem; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-  .adm-user-meta { display: flex; gap: 16px; padding: 10px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 12px; }
-  .adm-user-meta-item { flex: 1; min-width: 0; }
-  .adm-user-meta-label { font-size: .62rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
-  .adm-user-meta-val { font-size: .85rem; font-weight: 700; color: var(--ink); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .adm-account-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .adm-account-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--gold-soft); color: var(--gold-hover); display: grid; place-items: center; font-size: .95rem; flex-shrink: 0; }
+  .adm-user-name {
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .adm-user-email {
+    font-size: .74rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+  .adm-user-meta {
+    display: flex;
+    gap: 16px;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .adm-user-meta-item {
+    flex: 1;
+    min-width: 0;
+  }
+  .adm-user-meta-label {
+    font-size: .62rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 700;
+  }
+  .adm-user-meta-val {
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Account card */
+  .adm-account-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .adm-account-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    display: grid; place-items: center;
+    font-size: .95rem;
+    flex-shrink: 0;
+  }
   .adm-account-main { flex: 1; min-width: 0; }
-  .adm-account-name { font-size: .88rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .adm-account-num { font-size: .72rem; color: var(--text-faint); font-family: ui-monospace, monospace; margin-top: 1px; }
-  .adm-tx-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-  .adm-tx-icon { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; font-size: .85rem; flex-shrink: 0; }
-  .adm-tx-icon.out { background: var(--red-soft); color: var(--red); }
-  .adm-tx-icon.in { background: var(--green-soft); color: var(--green); }
-  .adm-tx-icon.neutral { background: var(--gold-soft); color: var(--gold-hover); }
+  .adm-account-name {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .adm-account-num {
+    font-size: .72rem;
+    color: var(--text-muted);
+    font-family: ui-monospace, monospace;
+    margin-top: 1px;
+  }
+
+  /* Transaction card */
+  .adm-tx-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .adm-tx-icon {
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    display: grid; place-items: center;
+    font-size: .85rem;
+    flex-shrink: 0;
+  }
+  .adm-tx-icon.out { background: var(--danger-light); color: var(--danger); }
+  .adm-tx-icon.in { background: var(--green-light); color: var(--green-dark); }
+  .adm-tx-icon.neutral { background: var(--warning-light); color: var(--warning); }
   .adm-tx-main { flex: 1; min-width: 0; }
-  .adm-tx-type { font-size: .85rem; font-weight: 700; color: var(--ink); text-transform: capitalize; }
-  .adm-tx-ref { font-size: .68rem; color: var(--text-faint); font-family: ui-monospace, monospace; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .adm-tx-amt { font-size: .9rem; font-weight: 800; color: var(--ink); white-space: nowrap; }
-  .adm-tx-rows { border-top: 1px solid var(--line); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-  .adm-tx-row { display: flex; justify-content: space-between; gap: 12px; font-size: .78rem; }
-  .adm-tx-row-label { color: var(--text-faint); flex-shrink: 0; }
-  .adm-tx-row-val { color: var(--ink); font-weight: 600; text-align: right; word-break: break-word; min-width: 0; }
-  .adm-code-value { font-family: ui-monospace, monospace; font-size: 1.1rem; font-weight: 800; letter-spacing: .12em; color: var(--ink); background: var(--bg); padding: 10px 14px; border-radius: 10px; text-align: center; border: 1px dashed var(--line-2); margin-bottom: 10px; word-break: break-all; }
-  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; font-size: .68rem; font-weight: 700; letter-spacing: .02em; }
-  .badge.approved { background: var(--green-soft); color: var(--green); }
-  .badge.pending { background: var(--amber-soft); color: var(--amber); }
-  .badge.blocked { background: var(--red-soft); color: var(--red); }
-  .badge.frozen { background: var(--bg); color: var(--text-dim); border: 1px solid var(--line-2); }
-  .badge.active { background: var(--green-soft); color: var(--green); }
-  .adm-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-  .adm-btn { border: 1px solid var(--line-2); background: #fff; color: var(--text-dim); padding: 8px 12px; border-radius: 10px; font-family: inherit; font-size: .74rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all .15s; flex: 1; justify-content: center; min-width: 0; white-space: nowrap; }
+  .adm-tx-type {
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: capitalize;
+  }
+  .adm-tx-ref {
+    font-size: .68rem;
+    color: var(--text-muted);
+    font-family: ui-monospace, monospace;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .adm-tx-amt {
+    font-size: .9rem;
+    font-weight: 800;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .adm-tx-rows {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .adm-tx-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: .78rem;
+  }
+  .adm-tx-row-label { color: var(--text-muted); flex-shrink: 0; }
+  .adm-tx-row-val {
+    color: var(--text);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-word;
+    min-width: 0;
+  }
+
+  /* Code card */
+  .adm-code-value {
+    font-family: ui-monospace, monospace;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    color: var(--text);
+    background: var(--bg-soft);
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    margin-bottom: 10px;
+    word-break: break-all;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .badge.approved { background: var(--green-light); color: var(--green-dark); }
+  .badge.pending { background: var(--warning-light); color: var(--warning); }
+  .badge.blocked { background: var(--danger-light); color: var(--danger); }
+  .badge.frozen { background: var(--bg-soft); color: var(--text-mid); border: 1px solid var(--border); }
+  .badge.active { background: var(--green-light); color: var(--green-dark); }
+
+  /* Action buttons */
+  .adm-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .adm-btn {
+    border: 1px solid var(--border-soft);
+    background: #fff;
+    color: var(--text-mid);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: .74rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all .15s;
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    white-space: nowrap;
+  }
   .adm-btn:active { transform: scale(.96); }
-  .adm-btn.approve { color: var(--green); border-color: #bbf7d0; }
-  .adm-btn.approve:hover { background: var(--green-soft); }
-  .adm-btn.block { color: var(--red); border-color: #fecaca; }
-  .adm-btn.block:hover { background: var(--red-soft); }
-  .adm-btn.credit { color: var(--blue); border-color: var(--blue-line); }
-  .adm-btn.credit:hover { background: var(--blue-soft); }
-  .adm-btn.debit { color: var(--amber); border-color: #fde68a; }
-  .adm-btn.debit:hover { background: var(--amber-soft); }
-  .adm-btn.danger { color: var(--red); border-color: #fecaca; }
-  .adm-btn.danger:hover { background: var(--red-soft); }
+  .adm-btn.approve { color: var(--green-dark); border-color: #bbf7d0; }
+  .adm-btn.approve:hover { background: var(--green-light); }
+  .adm-btn.block { color: var(--danger); border-color: #fecaca; }
+  .adm-btn.block:hover { background: var(--danger-light); }
+  .adm-btn.credit { color: #2563eb; border-color: #bfdbfe; }
+  .adm-btn.credit:hover { background: #dbeafe; }
+  .adm-btn.debit { color: #d97706; border-color: #fde68a; }
+  .adm-btn.debit:hover { background: #fef3c7; }
+  .adm-btn.danger { color: var(--danger); border-color: #fecaca; }
+  .adm-btn.danger:hover { background: var(--danger-light); }
+
+  /* Form */
   .adm-field { margin-bottom: 14px; }
-  .adm-field label { display: block; font-size: .78rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-  .adm-field input, .adm-field select { width: 100%; padding: 11px 14px; border: 1px solid var(--line-2); border-radius: 10px; font-family: inherit; font-size: .88rem; background: #fff; }
-  .adm-field input:focus, .adm-field select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(22, 163, 74, .15); }
-  .adm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  #loginGate { min-height: 100vh; display: none; align-items: center; justify-content: center; padding: 20px; }
-  #loginGate .gate-card { width: 100%; max-width: 400px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 32px 24px; box-shadow: var(--shadow); }
-  .gate-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--gold-soft); color: var(--gold-hover); display: grid; place-items: center; font-size: 1.3rem; margin-bottom: 18px; }
-  .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, .55); display: none; align-items: center; justify-content: center; z-index: 900; padding: 20px; backdrop-filter: blur(3px); }
+  .adm-field label {
+    display: block;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .adm-field input,
+  .adm-field select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: .88rem;
+    background: #fff;
+  }
+  .adm-field input:focus,
+  .adm-field select:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, .15);
+  }
+  .adm-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Login gate */
+  #loginGate {
+    min-height: 100vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  #loginGate .gate-card {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    box-shadow: var(--shadow);
+  }
+  .gate-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    display: grid; place-items: center;
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, .55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 900;
+    padding: 20px;
+    backdrop-filter: blur(3px);
+  }
   .modal-backdrop.show { display: flex; }
-  .modal-card { background: #fff; border-radius: 18px; padding: 24px; width: 100%; max-width: 400px; box-shadow: var(--shadow-lg); }
+  .modal-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+  }
   .modal-card h3 { margin-bottom: 6px; font-size: 1.05rem; }
-  .modal-card p { font-size: .84rem; color: var(--text-faint); margin-bottom: 18px; }
-  .code-display { font-family: ui-monospace, monospace; font-size: 1.4rem; letter-spacing: .12em; font-weight: 800; color: var(--ink); background: var(--bg); padding: 14px; border-radius: 12px; border: 1px dashed var(--line-2); text-align: center; margin: 14px 0; word-break: break-all; }
-  .adm-empty { text-align: center; padding: 40px 20px; color: var(--text-faint); background: #fff; border: 1px solid var(--line); border-radius: 14px; }
-  .adm-empty i { font-size: 1.8rem; display: block; margin-bottom: 10px; color: var(--line-2); }
+  .modal-card p { font-size: .84rem; color: var(--text-muted); margin-bottom: 18px; }
+  .code-display {
+    font-family: ui-monospace, monospace;
+    font-size: 1.4rem;
+    letter-spacing: .12em;
+    font-weight: 800;
+    color: var(--text);
+    background: var(--bg-soft);
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px dashed var(--border);
+    text-align: center;
+    margin: 14px 0;
+    word-break: break-all;
+  }
+
+  /* Empty state */
+  .adm-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .adm-empty i {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 10px;
+    color: var(--border);
+  }
   .adm-empty p { font-size: .85rem; }
-  @media (min-width: 720px) { .adm-actions .adm-btn { flex: 0 0 auto; min-width: 90px; } .adm-user-meta { gap: 32px; } }
-  @media (max-width: 380px) { .adm-stats { grid-template-columns: 1fr; } .adm-row { grid-template-columns: 1fr; } }
+
+  /* Desktop tweaks */
+  @media (min-width: 720px) {
+    .adm-actions .adm-btn { flex: 0 0 auto; min-width: 90px; }
+    .adm-user-meta { gap: 32px; }
+  }
+  @media (max-width: 380px) {
+    .adm-stats { grid-template-columns: 1fr; }
+    .adm-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
+<!-- ============ LOGIN GATE ============ -->
 <div id="loginGate">
   <div class="gate-card">
     <div class="gate-icon"><i class="fas fa-shield-halved"></i></div>
     <h2 style="font-size:1.4rem;margin-bottom:4px;">Admin sign in</h2>
-    <p style="color:var(--text-faint);font-size:.85rem;margin-bottom:22px;">Sign in with your DatRex administrator account.</p>
+    <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:22px;">
+      Sign in with your DatRex administrator account.
+    </p>
     <form id="loginForm">
       <div class="form-alert" id="loginAlert"></div>
       <div class="adm-field">
@@ -131,15 +570,21 @@
         <label>Password</label>
         <input type="password" id="adminPassword" required />
       </div>
-      <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn"><i class="fas fa-lock-open"></i> Sign in</button>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn">
+        <i class="fas fa-lock-open"></i> Sign in
+      </button>
     </form>
     <div style="text-align:center;margin-top:18px;">
-      <a href="login.html" style="font-size:.78rem;color:var(--text-faint);"><i class="fas fa-arrow-left"></i> Back to website</a>
+      <a href="login.html" style="font-size:.78rem;color:var(--text-muted);">
+        <i class="fas fa-arrow-left"></i> Back to website
+      </a>
     </div>
   </div>
 </div>
 
+<!-- ============ ADMIN PANEL ============ -->
 <div id="adminPanel" style="display:none;">
+
   <header class="adm-top">
     <div class="adm-top-inner">
       <a href="admin.html" class="adm-brand">
@@ -149,11 +594,15 @@
           <div class="adm-brand-sub">RECOVERY</div>
         </div>
       </a>
-      <button class="adm-signout" id="signOutBtn"><i class="fas fa-arrow-right-from-bracket"></i> Sign out</button>
+      <button class="adm-signout" id="signOutBtn">
+        <i class="fas fa-arrow-right-from-bracket"></i> Sign out
+      </button>
     </div>
   </header>
 
   <main class="adm-main">
+
+    <!-- Stats -->
     <div class="adm-stats">
       <div class="adm-stat">
         <div class="adm-stat-label">Customers</div>
@@ -172,6 +621,7 @@
       </div>
     </div>
 
+    <!-- Tabs -->
     <div class="adm-tabs">
       <button class="adm-tab active" data-tab="users"><i class="fas fa-users"></i> Users</button>
       <button class="adm-tab" data-tab="accounts"><i class="fas fa-wallet"></i> Accounts</button>
@@ -180,28 +630,39 @@
       <button class="adm-tab" data-tab="audit"><i class="fas fa-clipboard-list"></i> Audit</button>
     </div>
 
+    <!-- USERS -->
     <section class="adm-panel active" id="panel-users">
       <div class="adm-head">
         <h3><i class="fas fa-users"></i> All customers</h3>
-        <button class="btn btn-primary btn-sm" id="btnRefresh"><i class="fas fa-rotate"></i> Force Sync</button>
       </div>
       <input type="text" id="userSearch" class="adm-search" placeholder="Search name or email…" style="margin-bottom:12px;" />
-      <div id="usersList"><div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div></div>
+      <div id="usersList">
+        <div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div>
+      </div>
     </section>
 
+    <!-- ACCOUNTS -->
     <section class="adm-panel" id="panel-accounts">
       <div class="adm-head"><h3><i class="fas fa-wallet"></i> All accounts</h3></div>
-      <div id="accountsList"><div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div></div>
+      <div id="accountsList">
+        <div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div>
+      </div>
     </section>
 
+    <!-- TRANSACTIONS -->
     <section class="adm-panel" id="panel-transactions">
       <div class="adm-head"><h3><i class="fas fa-receipt"></i> All transactions</h3></div>
-      <div id="txList"><div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div></div>
+      <div id="txList">
+        <div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div>
+      </div>
     </section>
 
+    <!-- CODES -->
     <section class="adm-panel" id="panel-codes">
       <div class="adm-card" style="margin-bottom:18px;">
-        <div class="adm-head" style="margin-bottom:14px;"><h3><i class="fas fa-plus"></i> Generate transfer code</h3></div>
+        <div class="adm-head" style="margin-bottom:14px;">
+          <h3><i class="fas fa-plus"></i> Generate transfer code</h3>
+        </div>
         <form id="codeForm">
           <div class="form-alert" id="codeAlert"></div>
           <div class="adm-field">
@@ -210,34 +671,48 @@
           </div>
           <div class="adm-row">
             <div class="adm-field">
-              <label>Max amount (₱)</label>
+              <label>Max per transfer (₱)</label>
               <input type="number" id="codeLimit" placeholder="50000" min="1" step="0.01" required />
             </div>
             <div class="adm-field">
               <label>Valid for</label>
               <select id="codeTtl">
-                <option value="10">10 minutes</option><option value="30">30 minutes</option><option value="60" selected>1 hour</option><option value="360">6 hours</option><option value="1440">24 hours</option>
+                <option value="10">10 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60" selected>1 hour</option>
+                <option value="360">6 hours</option>
+                <option value="1440">24 hours</option>
               </select>
             </div>
           </div>
           <div class="adm-field">
-            <label>Custom code <span style="color:var(--text-faint);font-weight:400;">(optional)</span></label>
+            <label>Custom code <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
             <input type="text" id="codeCustom" placeholder="Leave blank to auto-generate" style="text-transform:uppercase;" maxlength="12" />
           </div>
-          <button type="submit" class="btn btn-primary btn-block" id="codeBtn"><i class="fas fa-key"></i> Generate code</button>
+          <button type="submit" class="btn btn-primary btn-block" id="codeBtn">
+            <i class="fas fa-key"></i> Generate code
+          </button>
         </form>
       </div>
+
       <div class="adm-head"><h3><i class="fas fa-key"></i> Issued codes</h3></div>
-      <div id="codesList"><div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div></div>
+      <div id="codesList">
+        <div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div>
+      </div>
     </section>
 
+    <!-- AUDIT -->
     <section class="adm-panel" id="panel-audit">
       <div class="adm-head"><h3><i class="fas fa-clipboard-list"></i> Admin activity</h3></div>
-      <div id="auditList"><div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div></div>
+      <div id="auditList">
+        <div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div>
+      </div>
     </section>
+
   </main>
 </div>
 
+<!-- MODALS -->
 <div class="modal-backdrop" id="amountModal">
   <div class="modal-card">
     <h3 id="amountTitle">Adjust balance</h3>
@@ -255,10 +730,12 @@
 
 <div class="modal-backdrop" id="codeRevealModal">
   <div class="modal-card">
-    <h3><i class="fas fa-key" style="color:var(--gold-hover);margin-right:8px;"></i>Transfer code issued</h3>
+    <h3><i class="fas fa-key" style="color:var(--green-dark);margin-right:8px;"></i>Transfer code issued</h3>
     <p>Give this code to the customer. It is required for their next transfer.</p>
     <div class="code-display" id="revealCode">—</div>
-    <p style="font-size:.78rem;color:var(--text-faint);text-align:center;margin-bottom:16px;"><span id="revealMeta"></span></p>
+    <p style="font-size:.78rem;color:var(--text-muted);text-align:center;margin-bottom:16px;">
+      <span id="revealMeta"></span>
+    </p>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button class="btn btn-outline" id="copyCodeBtn"><i class="fas fa-copy"></i> Copy</button>
       <button class="btn btn-primary" id="closeRevealBtn">Done</button>
@@ -279,113 +756,106 @@ let users = [], accounts = [], transactions = [], codes = [], auditLogs = [];
 let unsubs = [];
 let pendingAmountAction = null;
 
+// ================ LOGIN ================
 $('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const alert = $('loginAlert'); alert.className = 'form-alert';
+  const alert = $('loginAlert');
+  alert.className = 'form-alert';
+
   const email = $('adminEmail').value.trim().toLowerCase();
   const password = $('adminPassword').value;
-  $('loginBtn').disabled = true; $('loginBtn').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Signing in…';
+
+  $('loginBtn').disabled = true;
+  $('loginBtn').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Signing in…';
+
   try {
     if (auth.currentUser) await auth.signOut();
     const cred = await auth.signInWithEmailAndPassword(email, password);
     if (cred.user.email.toLowerCase() !== STB_ADMIN_EMAIL.toLowerCase()) {
-      await auth.signOut(); alert.textContent = 'This email is not the administrator account.'; alert.className = 'form-alert show error';
+      await auth.signOut();
+      alert.textContent = 'This email is not the administrator account.';
+      alert.className = 'form-alert show error';
     }
   } catch (err) {
+    console.error(err);
     let msg = 'Sign-in failed.';
-    if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') msg = 'Incorrect email or password.';
-    else if (err.code === 'auth/too-many-requests') msg = 'Too many attempts. Try again later.';
-    alert.textContent = msg; alert.className = 'form-alert show error';
+    if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+      msg = 'Incorrect email or password.';
+    } else if (err.code === 'auth/too-many-requests') {
+      msg = 'Too many attempts. Try again later.';
+    }
+    alert.textContent = msg;
+    alert.className = 'form-alert show error';
   } finally {
-    $('loginBtn').disabled = false; $('loginBtn').innerHTML = '<i class="fas fa-lock-open"></i> Sign in';
+    $('loginBtn').disabled = false;
+    $('loginBtn').innerHTML = '<i class="fas fa-lock-open"></i> Sign in';
   }
 });
 
-$('signOutBtn').addEventListener('click', async () => { await auth.signOut(); window.location.reload(); });
-
-// FORCE SYNC BUTTON
-$('btnRefresh').addEventListener('click', () => {
-  $('btnRefresh').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Syncing...';
-  fetchAllData().then(() => {
-    $('btnRefresh').innerHTML = '<i class="fas fa-rotate"></i> Force Sync';
-    stbToast('Database synced successfully', 'success');
-  }).catch(err => {
-    $('btnRefresh').innerHTML = '<i class="fas fa-rotate"></i> Force Sync';
-    stbToast('Sync failed: ' + err.message, 'error');
-  });
+$('signOutBtn').addEventListener('click', async () => {
+  await auth.signOut();
+  window.location.reload();
 });
 
 auth.onAuthStateChanged(async (user) => {
   if (user && user.email.toLowerCase() === STB_ADMIN_EMAIL.toLowerCase()) {
-    const doc = await db.collection(STB_C.users).doc(user.uid).get();
-    if (!doc.exists) {
-      await db.collection(STB_C.users).doc(user.uid).set({
-        fullName: 'DatRex Admin', username: 'admin', email: STB_ADMIN_EMAIL, phone: '', dob: '', role: 'admin', status: 'approved', pinhash: '', createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    }
-    $('loginGate').style.display = 'none'; $('adminPanel').style.display = 'block'; 
     
-    // Start the real-time listeners
-    startListeners();
-    // ALSO force a hard-fetch immediately to make sure it loads on first try
-    fetchAllData();
+    // Ensure admin doc exists
+    try {
+      const doc = await db.collection(STB_C.users).doc(user.uid).get();
+      if (!doc.exists) {
+        await db.collection(STB_C.users).doc(user.uid).set({
+          fullName: 'DatRex Admin', username: 'admin', email: STB_ADMIN_EMAIL, phone: '', dob: '', role: 'admin', status: 'approved', pinhash: '', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+    } catch (e) { console.warn("Admin doc setup error:", e); }
 
+    $('loginGate').style.display = 'none';
+    $('adminPanel').style.display = 'block';
+    
+    startListeners();
   } else {
-    stopListeners(); $('loginGate').style.display = 'flex'; $('adminPanel').style.display = 'none';
+    stopListeners();
+    $('loginGate').style.display = 'flex';
+    $('adminPanel').style.display = 'none';
   }
 });
 
-// Real-time listeners
 function startListeners() {
   if (unsubs.length) return;
 
   unsubs.push(db.collection(STB_C.users).onSnapshot(snap => {
-    users = []; snap.forEach(d => users.push({ id: d.id, ...d.data() }));
+    users = [];
+    snap.forEach(d => users.push({ id: d.id, ...d.data() }));
     renderUsers(); renderStats(); renderCodeCustomerSelect();
-  }, err => console.error("Users read error:", err)));
+  }, err => console.error(err)));
 
   unsubs.push(db.collection(STB_C.accounts).onSnapshot(snap => {
-    accounts = []; snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
-    renderAccounts(); renderStats(); renderUsers(); 
-  }, err => console.error("Accounts read error:", err)));
+    accounts = [];
+    snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
+    renderAccounts(); renderStats();
+    renderUsers(); // Update user cards with new balances
+  }, err => console.error(err)));
 
   unsubs.push(db.collection(STB_C.transactions).limit(500).onSnapshot(snap => {
-    transactions = []; snap.forEach(d => transactions.push({ id: d.id, ...d.data() }));
+    transactions = [];
+    snap.forEach(d => transactions.push({ id: d.id, ...d.data() }));
     renderTransactions();
-  }, err => console.error("Tx read error:", err)));
+  }, err => console.error(err)));
 
   unsubs.push(db.collection(STB_C.codes).limit(200).onSnapshot(snap => {
-    codes = []; snap.forEach(d => codes.push({ id: d.id, ...d.data() }));
+    codes = [];
+    snap.forEach(d => codes.push({ id: d.id, ...d.data() }));
     renderCodes(); renderStats();
-  }, err => console.error("Codes read error:", err)));
+  }, err => console.error(err)));
 
   unsubs.push(db.collection('auditLogs').limit(200).onSnapshot(snap => {
-    auditLogs = []; snap.forEach(d => auditLogs.push({ id: d.id, ...d.data() }));
+    auditLogs = [];
+    snap.forEach(d => auditLogs.push({ id: d.id, ...d.data() }));
     renderAudit();
-  }, err => console.error("Audit read error:", err)));
+  }, err => console.error(err)));
 }
 function stopListeners() { unsubs.forEach(u => u()); unsubs = []; }
-
-// Hard-fetch (bypasses live listener issues on mobile)
-async function fetchAllData() {
-  const uSnap = await db.collection(STB_C.users).get();
-  users = []; uSnap.forEach(d => users.push({ id: d.id, ...d.data() }));
-
-  const aSnap = await db.collection(STB_C.accounts).get();
-  accounts = []; aSnap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
-
-  const tSnap = await db.collection(STB_C.transactions).limit(500).get();
-  transactions = []; tSnap.forEach(d => transactions.push({ id: d.id, ...d.data() }));
-
-  const cSnap = await db.collection(STB_C.codes).limit(200).get();
-  codes = []; cSnap.forEach(d => codes.push({ id: d.id, ...d.data() }));
-
-  const lSnap = await db.collection('auditLogs').limit(200).get();
-  auditLogs = []; lSnap.forEach(d => auditLogs.push({ id: d.id, ...d.data() }));
-
-  renderUsers(); renderStats(); renderCodeCustomerSelect();
-  renderAccounts(); renderTransactions(); renderCodes(); renderAudit();
-}
 
 function renderStats() {
   $('statUsers').textContent = users.length;
@@ -393,15 +863,19 @@ function renderStats() {
   $('statPending').textContent = pending + ' pending';
   const total = accounts.reduce((s, a) => s + Number(a.balance || 0), 0);
   $('statBalance').textContent = stbMoney(total);
-  $('statCodes').textContent = codes.filter(c => c.status === 'active').length;
+  const activeCodes = codes.filter(c => c.status === 'active').length;
+  $('statCodes').textContent = activeCodes;
 }
 
+// ================ USERS ================
 function renderUsers() {
   const q = ($('userSearch').value || '').trim().toLowerCase();
   const filtered = users.filter(u => !q || (u.fullName || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q));
   const el = $('usersList');
-  if (filtered.length === 0) { el.innerHTML = `<div class="adm-empty"><i class="fas fa-users"></i><p>No customers found.</p></div>`; return; }
-  
+  if (filtered.length === 0) {
+    el.innerHTML = `<div class="adm-empty"><i class="fas fa-users"></i><p>No customers found.</p></div>`;
+    return;
+  }
   el.innerHTML = filtered.map(u => {
     const initials = (u.fullName || '?').split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
     const status = u.status || 'pending';
@@ -443,9 +917,13 @@ function renderUsers() {
 }
 $('userSearch').addEventListener('input', renderUsers);
 
+// ================ ACCOUNTS ================
 function renderAccounts() {
   const el = $('accountsList');
-  if (accounts.length === 0) { el.innerHTML = `<div class="adm-empty"><i class="fas fa-wallet"></i><p>No accounts yet.</p></div>`; return; }
+  if (accounts.length === 0) {
+    el.innerHTML = `<div class="adm-empty"><i class="fas fa-wallet"></i><p>No accounts yet.</p></div>`;
+    return;
+  }
   el.innerHTML = accounts.map(a => {
     const icon = a.type === 'checking' ? 'fa-wallet' : a.type === 'savings' ? 'fa-piggy-bank' : 'fa-lock';
     const frozen = a.status === 'frozen';
@@ -471,17 +949,26 @@ function renderAccounts() {
           </div>
         </div>
         <div class="adm-actions">
-          ${!frozen ? `<button class="adm-btn block" data-act="freeze-acc" data-id="${a.id}"><i class="fas fa-snowflake"></i> Freeze</button>` : `<button class="adm-btn approve" data-act="unfreeze-acc" data-id="${a.id}"><i class="fas fa-check"></i> Unfreeze</button>`}
+          ${!frozen
+            ? `<button class="adm-btn block" data-act="freeze-acc" data-id="${a.id}"><i class="fas fa-snowflake"></i> Freeze</button>`
+            : `<button class="adm-btn approve" data-act="unfreeze-acc" data-id="${a.id}"><i class="fas fa-check"></i> Unfreeze</button>`}
         </div>
       </div>
     `;
   }).join('');
 }
 
+// ================ TRANSACTIONS ================
 function renderTransactions() {
   const el = $('txList');
-  const sorted = [...transactions].sort((a, b) => (b.createdAt?.toDate?.()?.getTime?.() || 0) - (a.createdAt?.toDate?.()?.getTime?.() || 0));
-  if (sorted.length === 0) { el.innerHTML = `<div class="adm-empty"><i class="fas fa-receipt"></i><p>No transactions yet.</p></div>`; return; }
+  const sorted = [...transactions].sort((a, b) =>
+    (b.createdAt?.toDate?.()?.getTime?.() || 0) - (a.createdAt?.toDate?.()?.getTime?.() || 0));
+
+  if (sorted.length === 0) {
+    el.innerHTML = `<div class="adm-empty"><i class="fas fa-receipt"></i><p>No transactions yet.</p></div>`;
+    return;
+  }
+
   el.innerHTML = sorted.slice(0, 100).map(t => {
     const isFee = t.type === 'fee';
     const isOut = t.fromUid && !isFee;
@@ -490,6 +977,7 @@ function renderTransactions() {
     if (isFee) { iconCls = 'neutral'; icon = 'fa-percent'; }
     else if (isOut) { iconCls = 'out'; icon = 'fa-arrow-up'; }
     else if (isIn) { iconCls = 'in'; icon = 'fa-arrow-down'; }
+
     return `
       <div class="adm-card">
         <div class="adm-tx-head">
@@ -501,38 +989,70 @@ function renderTransactions() {
           <div class="adm-tx-amt">${stbMoney(t.amount)}</div>
         </div>
         <div class="adm-tx-rows">
-          <div class="adm-tx-row"><span class="adm-tx-row-label">From</span><span class="adm-tx-row-val">${t.fromAccountName || '—'}</span></div>
-          <div class="adm-tx-row"><span class="adm-tx-row-label">To</span><span class="adm-tx-row-val">${t.toAccountName || '—'}${t.toBank ? ' · ' + t.toBank : ''}</span></div>
-          <div class="adm-tx-row"><span class="adm-tx-row-label">Date</span><span class="adm-tx-row-val">${stbDate(t.createdAt)}</span></div>
+          <div class="adm-tx-row">
+            <span class="adm-tx-row-label">From</span>
+            <span class="adm-tx-row-val">${t.fromAccountName || '—'}</span>
+          </div>
+          <div class="adm-tx-row">
+            <span class="adm-tx-row-label">To</span>
+            <span class="adm-tx-row-val">${t.toAccountName || '—'}${t.toBank ? ' · ' + t.toBank : ''}</span>
+          </div>
+          <div class="adm-tx-row">
+            <span class="adm-tx-row-label">Date</span>
+            <span class="adm-tx-row-val">${stbDate(t.createdAt)}</span>
+          </div>
         </div>
       </div>
     `;
   }).join('');
 }
 
+// ================ CODES ================
 function renderCodeCustomerSelect() {
-  const sel = $('codeCustomer'); const prev = sel.value;
-  sel.innerHTML = '<option value="">Select customer</option>' + users.filter(u => (u.status || '') === 'approved').map(u => `<option value="${u.id}">${u.fullName} — ${u.email}</option>`).join('');
+  const sel = $('codeCustomer');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">Select customer</option>' +
+    users.filter(u => (u.status || '') === 'approved')
+      .map(u => `<option value="${u.id}">${u.fullName} — ${u.email}</option>`).join('');
   if (prev) sel.value = prev;
 }
 
 function renderCodes() {
   const el = $('codesList');
-  if (codes.length === 0) { el.innerHTML = `<div class="adm-empty"><i class="fas fa-key"></i><p>No codes issued yet.</p></div>`; return; }
+  if (codes.length === 0) {
+    el.innerHTML = `<div class="adm-empty"><i class="fas fa-key"></i><p>No codes issued yet.</p></div>`;
+    return;
+  }
   el.innerHTML = codes.map(c => {
     let status = c.status || 'active';
     const badgeCls = status === 'active' ? 'approved' : status === 'used' ? 'frozen' : 'blocked';
     const owner = users.find(u => u.id === c.customerUid);
+
     return `
       <div class="adm-card">
         <div class="adm-code-value">${c.code}</div>
         <div class="adm-user-meta">
-          <div class="adm-user-meta-item"><div class="adm-user-meta-label">Customer</div><div class="adm-user-meta-val">${owner ? owner.fullName : (c.customerUid || '—').slice(0, 8)}</div></div>
-          <div class="adm-user-meta-item"><div class="adm-user-meta-label">Limit</div><div class="adm-user-meta-val">${stbMoney(c.maxAmount)}</div></div>
+          <div class="adm-user-meta-item">
+            <div class="adm-user-meta-label">Customer</div>
+            <div class="adm-user-meta-val">${owner ? owner.fullName : (c.customerUid || '—').slice(0, 8)}</div>
+          </div>
+          <div class="adm-user-meta-item">
+            <div class="adm-user-meta-label">Limit</div>
+            <div class="adm-user-meta-val">${stbMoney(c.maxAmount)}</div>
+          </div>
         </div>
-        <div class="adm-tx-row" style="margin-bottom:12px;"><span class="adm-tx-row-label">Status</span><span class="adm-tx-row-val"><span class="badge ${badgeCls}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></span></div>
-        <div class="adm-tx-row" style="margin-bottom:12px;"><span class="adm-tx-row-label">Expires</span><span class="adm-tx-row-val">${stbDate(c.expiresAt)}</span></div>
-        ${status === 'active' ? `<div class="adm-actions"><button class="adm-btn danger" data-act="revoke-code" data-id="${c.id}"><i class="fas fa-xmark"></i> Revoke</button></div>` : ''}
+        <div class="adm-tx-row" style="margin-bottom:12px;">
+          <span class="adm-tx-row-label">Status</span>
+          <span class="adm-tx-row-val"><span class="badge ${badgeCls}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></span>
+        </div>
+        <div class="adm-tx-row" style="margin-bottom:12px;">
+          <span class="adm-tx-row-label">Expires</span>
+          <span class="adm-tx-row-val">${stbDate(c.expiresAt)}</span>
+        </div>
+        ${status === 'active' ? `
+          <div class="adm-actions">
+            <button class="adm-btn danger" data-act="revoke-code" data-id="${c.id}"><i class="fas fa-xmark"></i> Revoke</button>
+          </div>` : ''}
       </div>
     `;
   }).join('');
@@ -540,54 +1060,101 @@ function renderCodes() {
 
 $('codeForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const alert = $('codeAlert'); alert.className = 'form-alert';
+  const alert = $('codeAlert');
+  alert.className = 'form-alert';
+
   const customerUid = $('codeCustomer').value;
   const limit = Number($('codeLimit').value || 0);
   const ttlMin = Number($('codeTtl').value || 60);
   let code = $('codeCustom').value.trim().toUpperCase();
+
   if (!customerUid) { alert.textContent = 'Select a customer.'; alert.className = 'form-alert show error'; return; }
   if (limit <= 0) { alert.textContent = 'Enter a valid amount limit.'; alert.className = 'form-alert show error'; return; }
-  if (!code) { const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)]; } 
-  else if (code.length < 6) { alert.textContent = 'Custom code must be at least 6 characters.'; alert.className = 'form-alert show error'; return; }
-  $('codeBtn').disabled = true; $('codeBtn').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Generating…';
+
+  if (!code) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  } else if (code.length < 6) {
+    alert.textContent = 'Custom code must be at least 6 characters.';
+    alert.className = 'form-alert show error';
+    return;
+  }
+
+  $('codeBtn').disabled = true;
+  $('codeBtn').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Generating…';
+
   try {
     const expiresAt = new Date(Date.now() + ttlMin * 60 * 1000);
     await db.collection(STB_C.codes).doc(code).set({
-      code, customerUid, maxAmount: limit, status: 'active', usedBy: null, usedAt: null, usedForAmount: null, usedForTx: null,
-      createdBy: auth.currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp(), expiresAt: firebase.firestore.Timestamp.fromDate(expiresAt)
+      code, customerUid, maxAmount: limit,
+      status: 'active', usedBy: null, usedAt: null, usedForAmount: null, usedForTx: null,
+      createdBy: auth.currentUser.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      expiresAt: firebase.firestore.Timestamp.fromDate(expiresAt)
     });
     await logAudit('generate_code', { targetUid: customerUid, code, amountLimit: limit });
-    $('revealCode').textContent = code; const owner = users.find(u => u.id === customerUid);
+    $('revealCode').textContent = code;
+    const owner = users.find(u => u.id === customerUid);
     $('revealMeta').textContent = `${owner ? owner.fullName : 'Customer'} · up to ${stbMoney(limit)}`;
-    $('codeRevealModal').classList.add('show'); $('codeCustom').value = ''; $('codeLimit').value = ''; alert.className = 'form-alert';
-    fetchAllData();
-  } catch (err) { alert.textContent = err.message || 'Failed to generate code.'; alert.className = 'form-alert show error'; } 
-  finally { $('codeBtn').disabled = false; $('codeBtn').innerHTML = '<i class="fas fa-key"></i> Generate code'; }
+    $('codeRevealModal').classList.add('show');
+    $('codeCustom').value = '';
+    $('codeLimit').value = '';
+    alert.className = 'form-alert';
+  } catch (err) {
+    console.error(err);
+    alert.textContent = err.message || 'Failed to generate code.';
+    alert.className = 'form-alert show error';
+  } finally {
+    $('codeBtn').disabled = false;
+    $('codeBtn').innerHTML = '<i class="fas fa-key"></i> Generate code';
+  }
 });
 
 $('copyCodeBtn').addEventListener('click', () => {
-  navigator.clipboard.writeText($('revealCode').textContent).then(() => stbToast('Code copied.', 'success'), () => stbToast('Copy failed.', 'error'));
+  const code = $('revealCode').textContent;
+  navigator.clipboard.writeText(code).then(
+    () => stbToast('Code copied.', 'success'),
+    () => stbToast('Copy failed — select manually.', 'error')
+  );
 });
 $('closeRevealBtn').addEventListener('click', () => $('codeRevealModal').classList.remove('show'));
 
+// ================ AUDIT ================
 function renderAudit() {
   const el = $('auditList');
-  if (auditLogs.length === 0) { el.innerHTML = `<div class="adm-empty"><i class="fas fa-clipboard-list"></i><p>No admin actions yet.</p></div>`; return; }
-  const sorted = [...auditLogs].sort((a, b) => (b.createdAt?.toDate?.()?.getTime?.() || 0) - (a.createdAt?.toDate?.()?.getTime?.() || 0));
+  if (auditLogs.length === 0) {
+    el.innerHTML = `<div class="adm-empty"><i class="fas fa-clipboard-list"></i><p>No admin actions yet.</p></div>`;
+    return;
+  }
+  const sorted = [...auditLogs].sort((a, b) =>
+    (b.createdAt?.toDate?.()?.getTime?.() || 0) - (a.createdAt?.toDate?.()?.getTime?.() || 0));
+
   el.innerHTML = sorted.map(l => {
     let target = '—';
     if (l.targetUid) { const u = users.find(x => x.id === l.targetUid); target = u ? u.fullName : l.targetUid.slice(0, 10) + '…'; }
     else if (l.code) target = l.code;
     else if (l.accountId) { const a = accounts.find(x => x.id === l.accountId); target = a ? (a.type + ' account') : l.accountId.slice(0, 10) + '…'; }
-    const details = []; if (l.amount != null) details.push(stbMoney(l.amount)); if (l.amountLimit != null) details.push('limit ' + stbMoney(l.amountLimit));
+
+    const details = [];
+    if (l.amount != null) details.push(stbMoney(l.amount));
+    if (l.amountLimit != null) details.push('limit ' + stbMoney(l.amountLimit));
+
     return `
       <div class="adm-card">
         <div class="adm-user-head" style="margin-bottom:10px;">
-          <div class="adm-avatar" style="background:var(--gold-soft);color:var(--gold-hover);"><i class="fas fa-clipboard-list"></i></div>
-          <div class="adm-user-info"><div class="adm-user-name">${(l.action || '').replace(/_/g, ' ')}</div><div class="adm-user-email">${stbDate(l.createdAt)}</div></div>
+          <div class="adm-avatar" style="background:var(--green-light);color:var(--green-dark);">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+          <div class="adm-user-info">
+            <div class="adm-user-name">${(l.action || '').replace(/_/g, ' ')}</div>
+            <div class="adm-user-email">${stbDate(l.createdAt)}</div>
+          </div>
         </div>
         <div class="adm-tx-rows">
-          <div class="adm-tx-row"><span class="adm-tx-row-label">Target</span><span class="adm-tx-row-val">${target}</span></div>
+          <div class="adm-tx-row">
+            <span class="adm-tx-row-label">Target</span>
+            <span class="adm-tx-row-val">${target}</span>
+          </div>
           ${details.length ? `<div class="adm-tx-row"><span class="adm-tx-row-label">Details</span><span class="adm-tx-row-val">${details.join(' · ')}</span></div>` : ''}
         </div>
       </div>
@@ -595,91 +1162,156 @@ function renderAudit() {
   }).join('');
 }
 
+// ================ TABS ================
 document.querySelectorAll('.adm-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.adm-tab').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.adm-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active'); $('panel-' + btn.dataset.tab).classList.add('active');
+    btn.classList.add('active');
+    $('panel-' + btn.dataset.tab).classList.add('active');
   });
 });
 
+// ================ ACTIONS ================
 document.addEventListener('click', async (e) => {
-  const btn = e.target.closest('button[data-act]'); if (!btn) return;
-  const act = btn.dataset.act; const id = btn.dataset.id;
+  const btn = e.target.closest('button[data-act]');
+  if (!btn) return;
+  const act = btn.dataset.act;
+  const id = btn.dataset.id;
+
   try {
-    if (act === 'approve') { await db.collection(STB_C.users).doc(id).update({ status: 'approved' }); await stbNotify(id, 'Account Approved', `Welcome to ${STB_BRAND}. Your account is now active.`, 'success'); await logAudit('approve_user', { targetUid: id }); stbToast('Customer approved.', 'success'); fetchAllData(); return; }
-    if (act === 'block') { await db.collection(STB_C.users).doc(id).update({ status: 'blocked' }); await logAudit('block_user', { targetUid: id }); stbToast('Customer blocked.', 'success'); fetchAllData(); return; }
-    
-    if (act === 'reset-pin') {
-      const pin = prompt('Enter new 4-digit PIN for this user:'); if (!pin || !/^\d{4}$/.test(pin)) { stbToast('Invalid PIN', 'error'); return; }
-      await db.collection(STB_C.users).doc(id).update({ pinhash: await stbHashPin(pin) }); await stbNotify(id, 'PIN Reset', 'Your PIN has been reset by DatRex support.', 'warning'); await logAudit('reset_pin', { targetUid: id }); stbToast('PIN reset successful.', 'success'); return;
+    if (act === 'approve') {
+      await db.collection(STB_C.users).doc(id).update({ status: 'approved' });
+      await stbNotify(id, 'Account Approved', `Welcome to ${STB_BRAND}. Your account is now active.`, 'success');
+      await logAudit('approve_user', { targetUid: id });
+      stbToast('Customer approved.', 'success');
+      return;
+    }
+    if (act === 'block') {
+      await db.collection(STB_C.users).doc(id).update({ status: 'blocked' });
+      await logAudit('block_user', { targetUid: id });
+      stbToast('Customer blocked.', 'success');
+      return;
     }
     
-    if (act === 'delete-user') { 
-      try { await db.collection(STB_C.users).doc(id).delete(); stbToast('User deleted from database.', 'success'); } 
-      catch (err) { stbToast('Delete failed: ' + err.message, 'error'); return; }
-      try { await logAudit('delete_user', { targetUid: id }); } catch (e) {}
-      fetchAllData();
-      return; 
+    if (act === 'reset-pin') {
+      const pin = prompt('Enter new 4-digit PIN for this user:');
+      if (!pin || !/^\d{4}$/.test(pin)) { stbToast('Invalid PIN', 'error'); return; }
+      await db.collection(STB_C.users).doc(id).update({ pinhash: await stbHashPin(pin) });
+      await stbNotify(id, 'PIN Reset', 'Your PIN has been reset by DatRex support.', 'warning');
+      await logAudit('reset_pin', { targetUid: id });
+      stbToast('PIN reset successful.', 'success');
+      return;
+    }
+    
+    if (act === 'delete-user') {
+      if (!confirm('Delete this user document? (Auth account will remain)')) return;
+      await db.collection(STB_C.users).doc(id).delete();
+      await logAudit('delete_user', { targetUid: id });
+      stbToast('User deleted from database.', 'success');
+      return;
     }
 
     if (act === 'credit-user' || act === 'debit-user') {
-      const u = users.find(x => x.id === id); if (!u) return; const isCredit = act === 'credit-user';
-      openAmountModal({ 
-        title: isCredit ? 'Add funds' : 'Remove funds', 
+      const u = users.find(x => x.id === id);
+      if (!u) return;
+      const isCredit = act === 'credit-user';
+      
+      openAmountModal({
+        title: isCredit ? 'Add funds' : 'Remove funds',
         sub: `${u.fullName} — ${u.email}`,
         action: async (amount) => {
-          let accSnap = await db.collection(STB_C.accounts).where('uid', '==', id).get();
-          if (accSnap.empty) {
+          let userAccounts = accounts.filter(a => a.uid === id);
+          
+          // Auto-repair if no accounts exist
+          if (!userAccounts.length) {
             const checkNum = stbGenAccountNumber();
-            await db.collection(STB_C.accounts).add({ uid: id, type: 'checking', balance: 0, accountNumber: checkNum, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            accSnap = await db.collection(STB_C.accounts).where('uid', '==', id).get();
+            const ref = await db.collection(STB_C.accounts).add({ 
+              uid: id, type: 'checking', balance: 0, accountNumber: checkNum, 
+              createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+            });
+            userAccounts = [{ id: ref.id, uid: id, type: 'checking', balance: 0, accountNumber: checkNum }];
           }
-          const userAccounts = accSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
           const target = userAccounts.find(a => a.type === 'checking') || userAccounts[0];
           const ref = db.collection(STB_C.accounts).doc(target.id);
           const newBal = Number(target.balance || 0) + (isCredit ? amount : -amount);
           if (newBal < 0) throw new Error('Insufficient balance to remove that amount.');
-          
+
           await ref.update({ balance: firebase.firestore.FieldValue.increment(isCredit ? amount : -amount) });
-          
+
           await db.collection(STB_C.transactions).add({
-            reference: stbGenReference(), type: isCredit ? 'admin_credit' : 'admin_debit',
-            fromUid: isCredit ? null : id, fromAccountId: isCredit ? null : target.id, fromAccountNumber: isCredit ? null : target.accountNumber, fromAccountName: isCredit ? STB_BRAND : u.fullName,
-            toUid: isCredit ? id : null, toAccountId: isCredit ? target.id : null, toAccountNumber: isCredit ? target.accountNumber : null, toAccountName: isCredit ? u.fullName : STB_BRAND,
-            amount, fee: 0, total: amount, description: isCredit ? 'Deposit by ' + STB_BRAND : 'Adjustment by ' + STB_BRAND, status: 'completed', createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            reference: stbGenReference(),
+            type: isCredit ? 'admin_credit' : 'admin_debit',
+            fromUid: isCredit ? null : id, fromAccountId: isCredit ? null : target.id,
+            fromAccountNumber: isCredit ? null : target.accountNumber,
+            fromAccountName: isCredit ? STB_BRAND : u.fullName,
+            toUid: isCredit ? id : null, toAccountId: isCredit ? target.id : null,
+            toAccountNumber: isCredit ? target.accountNumber : null,
+            toAccountName: isCredit ? u.fullName : STB_BRAND,
+            amount, fee: 0, total: amount,
+            description: isCredit ? 'Deposit by ' + STB_BRAND : 'Adjustment by ' + STB_BRAND,
+            status: 'completed',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-          
+
           await stbNotify(id, isCredit ? 'Funds Credited' : 'Funds Debited', `${STB_BRAND}: ${isCredit ? 'Credited' : 'Debited'} ${stbMoney(amount)} on your ${target.type} account.`, isCredit ? 'success' : 'warning');
           await logAudit(isCredit ? 'admin_credit' : 'admin_debit', { targetUid: id, amount, accountId: target.id });
           stbToast(`${isCredit ? 'Added' : 'Removed'} ${stbMoney(amount)}.`, 'success');
-          fetchAllData();
         }
-      }); 
+      });
       return;
     }
 
-    if (act === 'freeze-acc' || act === 'unfreeze-acc') { await db.collection(STB_C.accounts).doc(id).update({ status: act === 'freeze-acc' ? 'frozen' : 'active' }); await logAudit(act === 'freeze-acc' ? 'freeze_account' : 'unfreeze_account', { accountId: id }); stbToast('Account updated.', 'success'); fetchAllData(); return; }
-    if (act === 'revoke-code') { await db.collection(STB_C.codes).doc(id).delete(); await logAudit('revoke_code', { code: id }); stbToast('Code revoked.', 'success'); fetchAllData(); return; }
-  } catch (err) { stbToast(err.message || 'Action failed.', 'error'); }
+    if (act === 'freeze-acc' || act === 'unfreeze-acc') {
+      await db.collection(STB_C.accounts).doc(id).update({ status: act === 'freeze-acc' ? 'frozen' : 'active' });
+      await logAudit(act === 'freeze-acc' ? 'freeze_account' : 'unfreeze_account', { accountId: id });
+      stbToast('Account updated.', 'success');
+      return;
+    }
+
+    if (act === 'revoke-code') {
+      await db.collection(STB_C.codes).doc(id).delete();
+      await logAudit('revoke_code', { code: id });
+      stbToast('Code revoked.', 'success');
+      return;
+    }
+  } catch (err) {
+    console.error(err);
+    stbToast(err.message || 'Action failed.', 'error');
+  }
 });
 
+// ================ AMOUNT MODAL ================
 function openAmountModal({ title, sub, action }) {
-  $('amountTitle').textContent = title; $('amountSub').textContent = sub; $('amountInput').value = '';
-  pendingAmountAction = action; $('amountModal').classList.add('show'); setTimeout(() => $('amountInput').focus(), 100);
+  $('amountTitle').textContent = title;
+  $('amountSub').textContent = sub;
+  $('amountInput').value = '';
+  pendingAmountAction = action;
+  $('amountModal').classList.add('show');
+  setTimeout(() => $('amountInput').focus(), 100);
 }
 $('amountCancel').addEventListener('click', () => { $('amountModal').classList.remove('show'); pendingAmountAction = null; });
 $('amountConfirm').addEventListener('click', async () => {
-  const amount = Number($('amountInput').value || 0); if (amount <= 0 || !pendingAmountAction) return;
+  const amount = Number($('amountInput').value || 0);
+  if (amount <= 0 || !pendingAmountAction) return;
   $('amountConfirm').disabled = true;
-  try { await pendingAmountAction(amount); $('amountModal').classList.remove('show'); pendingAmountAction = null; } 
-  catch (err) { stbToast(err.message || 'Failed.', 'error'); } 
+  try {
+    await pendingAmountAction(amount);
+    $('amountModal').classList.remove('show');
+    pendingAmountAction = null;
+  } catch (err) { stbToast(err.message || 'Failed.', 'error'); }
   finally { $('amountConfirm').disabled = false; }
 });
 
+// ================ AUDIT HELPER ================
 async function logAudit(action, extra) {
-  try { await db.collection('auditLogs').add({ action, adminUid: auth.currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp(), ...extra }); } 
-  catch (e) { console.warn('audit log failed', e); }
+  try {
+    await db.collection('auditLogs').add({
+      action, adminUid: auth.currentUser.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(), ...extra
+    });
+  } catch (e) { console.warn('audit log failed', e); }
 }
 </script>
 </body>
