@@ -134,7 +134,7 @@
       <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn"><i class="fas fa-lock-open"></i> Sign in</button>
     </form>
     <div style="text-align:center;margin-top:18px;">
-      <a href="index.html" style="font-size:.78rem;color:var(--text-faint);"><i class="fas fa-arrow-left"></i> Back to website</a>
+      <a href="login.html" style="font-size:.78rem;color:var(--text-faint);"><i class="fas fa-arrow-left"></i> Back to website</a>
     </div>
   </div>
 </div>
@@ -181,7 +181,10 @@
     </div>
 
     <section class="adm-panel active" id="panel-users">
-      <div class="adm-head"><h3><i class="fas fa-users"></i> All customers</h3></div>
+      <div class="adm-head">
+        <h3><i class="fas fa-users"></i> All customers</h3>
+        <button class="btn btn-primary btn-sm" id="btnRefresh"><i class="fas fa-rotate"></i> Force Sync</button>
+      </div>
       <input type="text" id="userSearch" class="adm-search" placeholder="Search name or email…" style="margin-bottom:12px;" />
       <div id="usersList"><div class="adm-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div></div>
     </section>
@@ -300,6 +303,18 @@ $('loginForm').addEventListener('submit', async (e) => {
 
 $('signOutBtn').addEventListener('click', async () => { await auth.signOut(); window.location.reload(); });
 
+// FORCE SYNC BUTTON
+$('btnRefresh').addEventListener('click', () => {
+  $('btnRefresh').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Syncing...';
+  fetchAllData().then(() => {
+    $('btnRefresh').innerHTML = '<i class="fas fa-rotate"></i> Force Sync';
+    stbToast('Database synced successfully', 'success');
+  }).catch(err => {
+    $('btnRefresh').innerHTML = '<i class="fas fa-rotate"></i> Force Sync';
+    stbToast('Sync failed: ' + err.message, 'error');
+  });
+});
+
 auth.onAuthStateChanged(async (user) => {
   if (user && user.email.toLowerCase() === STB_ADMIN_EMAIL.toLowerCase()) {
     const doc = await db.collection(STB_C.users).doc(user.uid).get();
@@ -308,42 +323,69 @@ auth.onAuthStateChanged(async (user) => {
         fullName: 'DatRex Admin', username: 'admin', email: STB_ADMIN_EMAIL, phone: '', dob: '', role: 'admin', status: 'approved', pinhash: '', createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     }
-    $('loginGate').style.display = 'none'; $('adminPanel').style.display = 'block'; startListeners();
+    $('loginGate').style.display = 'none'; $('adminPanel').style.display = 'block'; 
+    
+    // Start the real-time listeners
+    startListeners();
+    // ALSO force a hard-fetch immediately to make sure it loads on first try
+    fetchAllData();
+
   } else {
     stopListeners(); $('loginGate').style.display = 'flex'; $('adminPanel').style.display = 'none';
   }
 });
 
+// Real-time listeners
 function startListeners() {
   if (unsubs.length) return;
 
   unsubs.push(db.collection(STB_C.users).onSnapshot(snap => {
     users = []; snap.forEach(d => users.push({ id: d.id, ...d.data() }));
     renderUsers(); renderStats(); renderCodeCustomerSelect();
-  }, err => console.error(err)));
+  }, err => console.error("Users read error:", err)));
 
   unsubs.push(db.collection(STB_C.accounts).onSnapshot(snap => {
     accounts = []; snap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
-    renderAccounts(); renderStats(); 
-    renderUsers(); 
-  }, err => console.error(err)));
+    renderAccounts(); renderStats(); renderUsers(); 
+  }, err => console.error("Accounts read error:", err)));
 
   unsubs.push(db.collection(STB_C.transactions).limit(500).onSnapshot(snap => {
     transactions = []; snap.forEach(d => transactions.push({ id: d.id, ...d.data() }));
     renderTransactions();
-  }, err => console.error(err)));
+  }, err => console.error("Tx read error:", err)));
 
   unsubs.push(db.collection(STB_C.codes).limit(200).onSnapshot(snap => {
     codes = []; snap.forEach(d => codes.push({ id: d.id, ...d.data() }));
     renderCodes(); renderStats();
-  }, err => console.error(err)));
+  }, err => console.error("Codes read error:", err)));
 
   unsubs.push(db.collection('auditLogs').limit(200).onSnapshot(snap => {
     auditLogs = []; snap.forEach(d => auditLogs.push({ id: d.id, ...d.data() }));
     renderAudit();
-  }, err => console.error(err)));
+  }, err => console.error("Audit read error:", err)));
 }
 function stopListeners() { unsubs.forEach(u => u()); unsubs = []; }
+
+// Hard-fetch (bypasses live listener issues on mobile)
+async function fetchAllData() {
+  const uSnap = await db.collection(STB_C.users).get();
+  users = []; uSnap.forEach(d => users.push({ id: d.id, ...d.data() }));
+
+  const aSnap = await db.collection(STB_C.accounts).get();
+  accounts = []; aSnap.forEach(d => accounts.push({ id: d.id, ...d.data() }));
+
+  const tSnap = await db.collection(STB_C.transactions).limit(500).get();
+  transactions = []; tSnap.forEach(d => transactions.push({ id: d.id, ...d.data() }));
+
+  const cSnap = await db.collection(STB_C.codes).limit(200).get();
+  codes = []; cSnap.forEach(d => codes.push({ id: d.id, ...d.data() }));
+
+  const lSnap = await db.collection('auditLogs').limit(200).get();
+  auditLogs = []; lSnap.forEach(d => auditLogs.push({ id: d.id, ...d.data() }));
+
+  renderUsers(); renderStats(); renderCodeCustomerSelect();
+  renderAccounts(); renderTransactions(); renderCodes(); renderAudit();
+}
 
 function renderStats() {
   $('statUsers').textContent = users.length;
@@ -518,6 +560,7 @@ $('codeForm').addEventListener('submit', async (e) => {
     $('revealCode').textContent = code; const owner = users.find(u => u.id === customerUid);
     $('revealMeta').textContent = `${owner ? owner.fullName : 'Customer'} · up to ${stbMoney(limit)}`;
     $('codeRevealModal').classList.add('show'); $('codeCustom').value = ''; $('codeLimit').value = ''; alert.className = 'form-alert';
+    fetchAllData();
   } catch (err) { alert.textContent = err.message || 'Failed to generate code.'; alert.className = 'form-alert show error'; } 
   finally { $('codeBtn').disabled = false; $('codeBtn').innerHTML = '<i class="fas fa-key"></i> Generate code'; }
 });
@@ -564,8 +607,8 @@ document.addEventListener('click', async (e) => {
   const btn = e.target.closest('button[data-act]'); if (!btn) return;
   const act = btn.dataset.act; const id = btn.dataset.id;
   try {
-    if (act === 'approve') { await db.collection(STB_C.users).doc(id).update({ status: 'approved' }); await stbNotify(id, 'Account Approved', `Welcome to ${STB_BRAND}. Your account is now active.`, 'success'); await logAudit('approve_user', { targetUid: id }); stbToast('Customer approved.', 'success'); return; }
-    if (act === 'block') { await db.collection(STB_C.users).doc(id).update({ status: 'blocked' }); await logAudit('block_user', { targetUid: id }); stbToast('Customer blocked.', 'success'); return; }
+    if (act === 'approve') { await db.collection(STB_C.users).doc(id).update({ status: 'approved' }); await stbNotify(id, 'Account Approved', `Welcome to ${STB_BRAND}. Your account is now active.`, 'success'); await logAudit('approve_user', { targetUid: id }); stbToast('Customer approved.', 'success'); fetchAllData(); return; }
+    if (act === 'block') { await db.collection(STB_C.users).doc(id).update({ status: 'blocked' }); await logAudit('block_user', { targetUid: id }); stbToast('Customer blocked.', 'success'); fetchAllData(); return; }
     
     if (act === 'reset-pin') {
       const pin = prompt('Enter new 4-digit PIN for this user:'); if (!pin || !/^\d{4}$/.test(pin)) { stbToast('Invalid PIN', 'error'); return; }
@@ -576,6 +619,7 @@ document.addEventListener('click', async (e) => {
       try { await db.collection(STB_C.users).doc(id).delete(); stbToast('User deleted from database.', 'success'); } 
       catch (err) { stbToast('Delete failed: ' + err.message, 'error'); return; }
       try { await logAudit('delete_user', { targetUid: id }); } catch (e) {}
+      fetchAllData();
       return; 
     }
 
@@ -585,18 +629,12 @@ document.addEventListener('click', async (e) => {
         title: isCredit ? 'Add funds' : 'Remove funds', 
         sub: `${u.fullName} — ${u.email}`,
         action: async (amount) => {
-          // 1. Fetch latest accounts from DB
           let accSnap = await db.collection(STB_C.accounts).where('uid', '==', id).get();
-          
-          // 2. AUTO-REPAIR: If missing, create ONE checking account right now
           if (accSnap.empty) {
-            console.log(`[Admin] Auto-repairing account for ${id}`);
             const checkNum = stbGenAccountNumber();
             await db.collection(STB_C.accounts).add({ uid: id, type: 'checking', balance: 0, accountNumber: checkNum, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            // Fetch again now that it exists
             accSnap = await db.collection(STB_C.accounts).where('uid', '==', id).get();
           }
-          
           const userAccounts = accSnap.docs.map(d => ({ id: d.id, ...d.data() }));
           const target = userAccounts.find(a => a.type === 'checking') || userAccounts[0];
           const ref = db.collection(STB_C.accounts).doc(target.id);
@@ -615,13 +653,14 @@ document.addEventListener('click', async (e) => {
           await stbNotify(id, isCredit ? 'Funds Credited' : 'Funds Debited', `${STB_BRAND}: ${isCredit ? 'Credited' : 'Debited'} ${stbMoney(amount)} on your ${target.type} account.`, isCredit ? 'success' : 'warning');
           await logAudit(isCredit ? 'admin_credit' : 'admin_debit', { targetUid: id, amount, accountId: target.id });
           stbToast(`${isCredit ? 'Added' : 'Removed'} ${stbMoney(amount)}.`, 'success');
+          fetchAllData();
         }
       }); 
       return;
     }
 
-    if (act === 'freeze-acc' || act === 'unfreeze-acc') { await db.collection(STB_C.accounts).doc(id).update({ status: act === 'freeze-acc' ? 'frozen' : 'active' }); await logAudit(act === 'freeze-acc' ? 'freeze_account' : 'unfreeze_account', { accountId: id }); stbToast('Account updated.', 'success'); return; }
-    if (act === 'revoke-code') { await db.collection(STB_C.codes).doc(id).delete(); await logAudit('revoke_code', { code: id }); stbToast('Code revoked.', 'success'); return; }
+    if (act === 'freeze-acc' || act === 'unfreeze-acc') { await db.collection(STB_C.accounts).doc(id).update({ status: act === 'freeze-acc' ? 'frozen' : 'active' }); await logAudit(act === 'freeze-acc' ? 'freeze_account' : 'unfreeze_account', { accountId: id }); stbToast('Account updated.', 'success'); fetchAllData(); return; }
+    if (act === 'revoke-code') { await db.collection(STB_C.codes).doc(id).delete(); await logAudit('revoke_code', { code: id }); stbToast('Code revoked.', 'success'); fetchAllData(); return; }
   } catch (err) { stbToast(err.message || 'Action failed.', 'error'); }
 });
 
