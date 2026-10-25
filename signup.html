@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — DatRex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg-soft); padding: 20px 0; }
+    .auth-card { width: 100%; max-width: 440px; background: #fff; padding: 32px; border-radius: 20px; box-shadow: var(--shadow-lg); }
+    .auth-brand { text-align: center; margin-bottom: 24px; }
+    .auth-logo { width: 56px; height: 56px; background: var(--green); color: #fff; display: grid; place-items: center; border-radius: 16px; font-size: 24px; margin: 0 auto 16px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-mid); margin-bottom: 6px; }
+    .input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 15px; }
+    .input:focus { outline: none; border-color: var(--green); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pin-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .pin-row input { width: 100%; aspect-ratio: 1; font-size: 22px; font-weight: 700; text-align: center; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-soft); }
+    .pin-row input:focus { outline: none; border-color: var(--green); background: #fff; }
+    .form-alert { display: none; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; text-align: center; }
+    .form-alert.show { display: block; background: var(--danger-light); color: var(--danger); border: 1px solid #fecaca; }
+    .auth-foot { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+    .auth-foot a { color: var(--green); font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-logo"><i class="fas fa-shield-halved"></i></div>
+      <h1 style="font-size: 24px; font-weight: 800; color: var(--text); margin: 0;">Create Account</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin-top: 6px;">Join DatRex Recovery Agency.</p>
+    </div>
+
+    <form id="signupForm">
+      <div class="form-alert" id="signupAlert"></div>
+
+      <div class="field">
+        <label>Full name</label>
+        <input class="input" id="suName" required autocomplete="name">
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label>Username</label>
+          <input class="input" id="suUsername" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input class="input" id="suPhone" required inputmode="tel" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input class="input" type="email" id="suEmail" required autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label>Date of birth</label>
+        <input class="input" type="date" id="suDob" required>
+      </div>
+
+      <div class="field">
+        <label>Password <span style="font-weight:400;color:var(--text-muted)">(min 6 chars)</span></label>
+        <input class="input" type="password" id="suPass" required minlength="6" autocomplete="new-password">
+      </div>
+
+      <div class="field">
+        <label>Set 4-digit PIN</label>
+        <div class="pin-row">
+          <input maxlength="1" inputmode="numeric" data-i="0" autocomplete="off">
+          <input maxlength="1" inputmode="numeric" data-i="1" autocomplete="off">
+          <input maxlength="1" inputmode="numeric" data-i="2" autocomplete="off">
+          <input maxlength="1" inputmode="numeric" data-i="3" autocomplete="off">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="suBtn" style="margin-top: 8px;">
+        Create account
+      </button>
+
+      <div class="auth-foot">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    const suBtn = document.getElementById('suBtn');
+    const alertEl = document.getElementById('signupAlert');
+
+    document.querySelectorAll('.pin-row input').forEach((inp, i, arr) => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/\D/g, '').slice(0, 1);
+        if (inp.value && i < arr.length - 1) arr[i + 1].focus();
+      });
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !inp.value && i > 0) arr[i - 1].focus();
+      });
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertEl.className = 'form-alert';
+      suBtn.disabled = true; suBtn.textContent = 'Creating…';
+
+      const pinInputs = document.querySelectorAll('.pin-row input');
+      const pin = [...pinInputs].map(x => x.value).join('');
+      if (pin.length !== 4) {
+        alertEl.textContent = 'Enter a 4-digit PIN.';
+        alertEl.className = 'form-alert show';
+        suBtn.disabled = false; suBtn.textContent = 'Create account'; return;
+      }
+
+      const data = {
+        fullName: document.getElementById('suName').value.trim(),
+        username: document.getElementById('suUsername').value.trim().toLowerCase(),
+        phone: document.getElementById('suPhone').value.trim(),
+        dob: document.getElementById('suDob').value,
+        email: document.getElementById('suEmail').value.trim().toLowerCase(),
+        password: document.getElementById('suPass').value,
+        pin
+      };
+
+      if (data.email === STB_ADMIN_EMAIL.toLowerCase()) {
+        alertEl.textContent = 'This email is reserved for admin.';
+        alertEl.className = 'form-alert show';
+        suBtn.disabled = false; suBtn.textContent = 'Create account'; return;
+      }
+
+      let authUser = null;
+      try {
+        // 1. Create Auth User
+        const cred = await auth.createUserWithEmailAndPassword(data.email, data.password);
+        authUser = cred.user;
+        const uid = authUser.uid;
+        
+        // 2. Hash PIN & Generate Account Number
+        const pinhash = await stbHashPin(data.pin);
+        const checkingNum = stbGenAccountNumber();
+
+        // 3. Batch write (Saves User and Account at the exact same time)
+        const batch = db.batch();
+        
+        const userRef = db.collection(STB_C.users).doc(uid);
+        batch.set(userRef, {
+          fullName: data.fullName, username: data.username, phone: data.phone, dob: data.dob, 
+          email: data.email, role: 'customer', status: 'pending', pinhash, 
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        const accRef = db.collection(STB_C.accounts).doc();
+        batch.set(accRef, {
+          uid, type: 'checking', balance: 0, accountNumber: checkingNum, 
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Execute the save
+        await batch.commit();
+
+        // 4. Send to Pending page
+        window.location.href = 'pending.html';
+
+      } catch (err) {
+        if (authUser) {
+          try { await authUser.delete(); await auth.signOut(); } catch (_) {}
+        }
+        alertEl.textContent = err.message.replace('Firebase: ', '');
+        alertEl.className = 'form-alert show';
+        suBtn.disabled = false; suBtn.textContent = 'Create account';
+      }
+    });
+  </script>
+</body>
+</html>
